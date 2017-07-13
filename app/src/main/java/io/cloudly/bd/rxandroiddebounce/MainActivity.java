@@ -11,11 +11,11 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,11 +54,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .debounce(800, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.newThread())
                 .subscribe(new Consumer<String>() {
                     @Override
-                    public void accept(@NonNull String s) throws Exception {
-                        textView.setText(s);
+                    public void accept(@NonNull final String s) throws Exception {
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                //stuff that updates ui
+                                textView.setText(s);
+                            }
+                        });
                     }
                 });
 
