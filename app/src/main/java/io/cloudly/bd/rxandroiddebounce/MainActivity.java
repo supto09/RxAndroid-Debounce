@@ -63,8 +63,12 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
 
-                                //stuff that updates ui
-                                textView.setText(s);
+                                //warn if not a valid email address
+
+                                if (s.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
+                                    textView.setText(s);
+                                else
+                                    editText.setError("Not a valid email");
                             }
                         });
                     }
