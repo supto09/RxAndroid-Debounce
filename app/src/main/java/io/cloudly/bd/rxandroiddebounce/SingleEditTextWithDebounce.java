@@ -1,7 +1,10 @@
 package io.cloudly.bd.rxandroiddebounce;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -17,9 +20,9 @@ import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity {
+public class SingleEditTextWithDebounce extends AppCompatActivity implements View.OnClickListener {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = SingleEditTextWithDebounce.class.getSimpleName();
 
     @BindView(R.id.edit_text)
     EditText editText;
@@ -27,12 +30,17 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.text_view)
     TextView textView;
 
+    @BindView(R.id.form_button)
+    Button formButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_single_edit_text_debounce);
 
         ButterKnife.bind(this);
+
+        formButton.setOnClickListener(this);
 
         RxTextView.textChanges(editText)
                 .filter(new Predicate<CharSequence>() {
@@ -73,6 +81,12 @@ public class MainActivity extends AppCompatActivity {
                         });
                     }
                 });
+    }
 
+    @Override
+    public void onClick(View view) {
+        if(view == formButton){
+            startActivity(new Intent(SingleEditTextWithDebounce.this,FormActivity.class));
+        }
     }
 }
