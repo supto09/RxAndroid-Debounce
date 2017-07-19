@@ -14,6 +14,8 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.cloudly.bd.rxandroiddebounce.search.SearchActivity;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -30,6 +32,9 @@ public class SingleEditTextWithDebounce extends AppCompatActivity implements Vie
     @BindView(R.id.text_view)
     TextView textView;
 
+    @BindView(R.id.search_button)
+    Button searchButton;
+
     @BindView(R.id.form_button)
     Button formButton;
 
@@ -40,6 +45,7 @@ public class SingleEditTextWithDebounce extends AppCompatActivity implements Vie
 
         ButterKnife.bind(this);
 
+        searchButton.setOnClickListener(this);
         formButton.setOnClickListener(this);
 
         RxTextView.textChanges(editText)
@@ -61,32 +67,26 @@ public class SingleEditTextWithDebounce extends AppCompatActivity implements Vie
                         return charSequence.toString();
                     }
                 })
-                .debounce(800, TimeUnit.MILLISECONDS)
-                .observeOn(Schedulers.newThread())
+                .debounce(800, TimeUnit.MILLISECONDS,AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull final String s) throws Exception {
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-
                                 //warn if not a valid email address
 
                                 if (s.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
                                     textView.setText(s);
                                 else
                                     editText.setError("Not a valid email");
-                            }
-                        });
                     }
                 });
     }
 
     @Override
     public void onClick(View view) {
-        if(view == formButton){
-            startActivity(new Intent(SingleEditTextWithDebounce.this,FormActivity.class));
+        if (view == formButton) {
+            startActivity(new Intent(SingleEditTextWithDebounce.this, FormActivity.class));
+        } else if (view == searchButton) {
+            startActivity(new Intent(SingleEditTextWithDebounce.this, SearchActivity.class));
         }
     }
 }

@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -56,52 +57,38 @@ public class FormActivity extends AppCompatActivity {
 
 
         // use each observable for validation
-        userNameDisposable = userNameObservable.debounce(800, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.newThread()).subscribe(new Consumer<String>() {
+        userNameDisposable = userNameObservable
+                .debounce(800, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String userName) throws Exception {
                         if (userName.length() < 3) {
 
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    userNameEt.setError("Username too short");
-                                }
-                            });
+                            userNameEt.setError("Username too short");
                         }
                     }
                 });
 
         // use each observable for validation
-        emailDisposable = emailObservable.debounce(800, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.newThread()).subscribe(new Consumer<String>() {
+        emailDisposable = emailObservable
+                .debounce(800, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String email) throws Exception {
                         if (!email.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+")) {
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    emailEt.setError("Not a valid email");
-                                }
-                            });
+                            emailEt.setError("Not a valid email");
                         }
                     }
                 });
 
         // use each observable for validation
-        passwordDisposable = passwordObservable.debounce(800, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.newThread()).subscribe(new Consumer<String>() {
+        passwordDisposable = passwordObservable
+                .debounce(800, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String password) throws Exception {
                         if (password.length() < 4) {
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    passwordEt.setError("Password too short");
-                                }
-                            });
+                            passwordEt.setError("Password too short");
                         }
                     }
                 });
@@ -132,43 +119,21 @@ public class FormActivity extends AppCompatActivity {
 
         // observe the combined observable to activate the submit button
         combinedDisposable = combinedObservable.observeOn(Schedulers.newThread())
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(@NonNull final Boolean aBoolean) throws Exception {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                signUpButton.setClickable(aBoolean);
-                                if (aBoolean)
-                                    signUpButton.setText("Active");
-                                else
-                                    signUpButton.setText("Not Active");
-                            }
-                        });
+
+                        signUpButton.setClickable(aBoolean);
+                        if (aBoolean)
+                            signUpButton.setText("Active");
+                        else
+                            signUpButton.setText("Not Active");
+
                     }
                 });
 
 
-    }
-
-    private Observable<String> getEditTextObservable(EditText editText) {
-
-        // method that takes a editText as input and returns an observable
-
-        return RxTextView.textChanges(editText)
-                .filter(new Predicate<CharSequence>() {
-                    @Override
-                    public boolean test(@NonNull CharSequence charSequence) throws Exception {
-                        return charSequence.length() > 0;
-                    }
-                })
-                .map(new Function<CharSequence, String>() {
-                    @Override
-                    public String apply(@NonNull CharSequence charSequence) throws Exception {
-
-                        return charSequence.toString();
-                    }
-                });
     }
 
     @Override
@@ -189,5 +154,25 @@ public class FormActivity extends AppCompatActivity {
         if (combinedDisposable != null && !combinedDisposable.isDisposed()) {
             combinedDisposable.dispose();
         }
+    }
+
+    private Observable<String> getEditTextObservable(EditText editText) {
+
+        // method that takes a editText as input and returns an observable
+
+        return RxTextView.textChanges(editText)
+                .filter(new Predicate<CharSequence>() {
+                    @Override
+                    public boolean test(@NonNull CharSequence charSequence) throws Exception {
+                        return charSequence.length() > 0;
+                    }
+                })
+                .map(new Function<CharSequence, String>() {
+                    @Override
+                    public String apply(@NonNull CharSequence charSequence) throws Exception {
+
+                        return charSequence.toString();
+                    }
+                });
     }
 }
