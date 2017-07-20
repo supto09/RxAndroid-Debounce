@@ -1,4 +1,4 @@
-package io.cloudly.bd.rxandroiddebounce;
+package io.cloudly.bd.rxandroiddebounce.singleEditText;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,13 +14,14 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.cloudly.bd.rxandroiddebounce.R;
+import io.cloudly.bd.rxandroiddebounce.form.FormActivity;
 import io.cloudly.bd.rxandroiddebounce.search.SearchActivity;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
-import io.reactivex.schedulers.Schedulers;
 
 public class SingleEditTextWithDebounce extends AppCompatActivity implements View.OnClickListener {
 

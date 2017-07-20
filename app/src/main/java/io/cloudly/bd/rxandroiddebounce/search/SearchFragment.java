@@ -4,6 +4,7 @@ package io.cloudly.bd.rxandroiddebounce.search;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,19 +12,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jakewharton.rxbinding2.widget.RxTextView;
-
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.cloudly.bd.rxandroiddebounce.R;
+import io.cloudly.bd.rxandroiddebounce.RxAndroidUtils;
 import io.cloudly.bd.rxandroiddebounce.rest.data.GitHubUser;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 
 
@@ -63,17 +62,17 @@ public class SearchFragment extends Fragment implements SearchContract.View {
 
 
         // get a observable from searchEditText
-        Observable<String> searchEditTextObservable = getEditTextObservable(searchEditText);
+        Observable<String> searchEditTextObservable = RxAndroidUtils.getInstance().getEditTextObservable(searchEditText);
 
         // make a request from text input with a debounce
         searchEditTextObservableDisposable = searchEditTextObservable
+                .debounce(300, TimeUnit.MILLISECONDS)
                 .filter(new Predicate<String>() {
                     @Override
                     public boolean test(@NonNull String s) throws Exception {
                         return s.length() > 3;
                     }
                 })
-                .debounce(800, TimeUnit.MILLISECONDS)
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
@@ -116,30 +115,13 @@ public class SearchFragment extends Fragment implements SearchContract.View {
     @Override
     public void showUserDetails(@NonNull GitHubUser gitHubUser) {
         Toast.makeText(getActivity(), gitHubUser.getHtmlUrl(), Toast.LENGTH_SHORT).show();
+        Log.d(TAG,"---------output: "+ gitHubUser.getHtmlUrl());
     }
 
     @Override
     public void displayToast(@NonNull String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-    }
+        Log.d(TAG,"---------output: "+ message);
 
-    private Observable<String> getEditTextObservable(EditText editText) {
-
-        // method that takes a editText as input and returns an observable
-
-        return RxTextView.textChanges(editText)
-                .filter(new Predicate<CharSequence>() {
-                    @Override
-                    public boolean test(@NonNull CharSequence charSequence) throws Exception {
-                        return charSequence.length() > 0;
-                    }
-                })
-                .map(new Function<CharSequence, String>() {
-                    @Override
-                    public String apply(@NonNull CharSequence charSequence) throws Exception {
-
-                        return charSequence.toString();
-                    }
-                });
     }
 }

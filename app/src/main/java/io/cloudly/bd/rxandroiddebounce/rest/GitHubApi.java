@@ -1,5 +1,6 @@
 package io.cloudly.bd.rxandroiddebounce.rest;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.GsonBuilder;
 
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,9 @@ public class GitHubApi {
 
     private GitHubApi() {
 
-        OkHttpClient.Builder okHttpClient = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.MINUTES)
+        OkHttpClient.Builder okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(5, TimeUnit.MINUTES)
+                .addNetworkInterceptor(new StethoInterceptor())
                 .readTimeout(5, TimeUnit.MINUTES);
 
         Retrofit retrofit = new Retrofit.Builder()

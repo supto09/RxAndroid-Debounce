@@ -1,5 +1,7 @@
 package io.cloudly.bd.rxandroiddebounce.search;
 
+import android.util.Log;
+
 import io.cloudly.bd.rxandroiddebounce.rest.GitHubApi;
 import io.cloudly.bd.rxandroiddebounce.rest.data.GitHubUser;
 import io.reactivex.Observable;
@@ -45,6 +47,14 @@ public class SearchPresenter implements SearchContract.Presenter {
 
     @Override
     public void loadUserDetail(@NonNull String userName) {
+
+        Log.d(TAG,"Request for: "+userName);
+
+        // dispose the observers
+        if (gitHubUserObservableDisposable != null && !gitHubUserObservableDisposable.isDisposed()) {
+            gitHubUserObservableDisposable.dispose();
+            Log.d(TAG, "Disposed");
+        }
 
         // request over rest
 

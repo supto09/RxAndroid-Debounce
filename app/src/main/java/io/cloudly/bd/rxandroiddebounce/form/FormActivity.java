@@ -1,24 +1,22 @@
-package io.cloudly.bd.rxandroiddebounce;
+package io.cloudly.bd.rxandroiddebounce.form;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.jakewharton.rxbinding2.widget.RxTextView;
-
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.cloudly.bd.rxandroiddebounce.R;
+import io.cloudly.bd.rxandroiddebounce.RxAndroidUtils;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.functions.Function3;
-import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 public class FormActivity extends AppCompatActivity {
@@ -51,9 +49,9 @@ public class FormActivity extends AppCompatActivity {
 
 
         // create observables for editTexts
-        Observable<String> userNameObservable = getEditTextObservable(userNameEt);
-        Observable<String> emailObservable = getEditTextObservable(emailEt);
-        Observable<String> passwordObservable = getEditTextObservable(passwordEt);
+        Observable<String> userNameObservable = RxAndroidUtils.getInstance().getEditTextObservable(userNameEt);
+        Observable<String> emailObservable = RxAndroidUtils.getInstance().getEditTextObservable(emailEt);
+        Observable<String> passwordObservable = RxAndroidUtils.getInstance().getEditTextObservable(passwordEt);
 
 
         // use each observable for validation
@@ -156,23 +154,4 @@ public class FormActivity extends AppCompatActivity {
         }
     }
 
-    private Observable<String> getEditTextObservable(EditText editText) {
-
-        // method that takes a editText as input and returns an observable
-
-        return RxTextView.textChanges(editText)
-                .filter(new Predicate<CharSequence>() {
-                    @Override
-                    public boolean test(@NonNull CharSequence charSequence) throws Exception {
-                        return charSequence.length() > 0;
-                    }
-                })
-                .map(new Function<CharSequence, String>() {
-                    @Override
-                    public String apply(@NonNull CharSequence charSequence) throws Exception {
-
-                        return charSequence.toString();
-                    }
-                });
-    }
 }

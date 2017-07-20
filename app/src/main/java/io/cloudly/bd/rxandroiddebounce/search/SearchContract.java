@@ -1,5 +1,7 @@
 package io.cloudly.bd.rxandroiddebounce.search;
 
+import android.widget.EditText;
+
 import io.cloudly.bd.rxandroiddebounce.BasePresenter;
 import io.cloudly.bd.rxandroiddebounce.BaseView;
 import io.cloudly.bd.rxandroiddebounce.rest.data.GitHubUser;
@@ -13,6 +15,7 @@ public interface SearchContract {
 
     interface Presenter extends BasePresenter {
         void loadUserDetail(@NonNull String userName);
+
     }
 
     interface View extends BaseView<Presenter> {
